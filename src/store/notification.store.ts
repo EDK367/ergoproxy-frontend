@@ -1,0 +1,38 @@
+import { create } from 'zustand';
+
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+
+interface Toast {
+  id: string;
+  type: ToastType;
+  message: string;
+}
+
+interface NotificationState {
+  toasts: Toast[];
+  addToast: (type: ToastType, message: string) => void;
+  removeToast: (id: string) => void;
+}
+
+export const useNotificationStore = create<NotificationState>((set) => ({
+  toasts: [],
+
+  addToast: (type, message) => {
+    const id = crypto.randomUUID();
+    set((state) => ({
+      toasts: [...state.toasts, { id, type, message }],
+    }));
+
+    setTimeout(() => {
+      set((state) => ({
+        toasts: state.toasts.filter((t) => t.id !== id),
+      }));
+    }, 4500);
+  },
+
+  removeToast: (id) => {
+    set((state) => ({
+      toasts: state.toasts.filter((t) => t.id !== id),
+    }));
+  },
+}));
